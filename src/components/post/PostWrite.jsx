@@ -1,16 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {useDispatch,useSelector} from 'react-redux'
-import { writePostFB } from '../../redux/modules/post';
+import { writeBoard } from '../../redux/modules/post';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
 const PostWrite = ({isLogin}) => {
     const [uploadImg,setImg] = useState(false)
+    const [content,setContent] = useState()
+    const [layout,setLayout] =useState('column')
     const userInfo = useSelector(state=>state.user.user)
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const uploadRef = useRef();
     const contentRef = useRef()
+    const getDate = ()=>{
+        let today = new Date();   
+        let year = today.getFullYear(); // 년도
+        let month = today.getMonth() + 1;  // 월
+        let date = today.getDate();  // 날짜
+        const time = `${year}년 ${month}월 ${date}일`
+        return time
+    }
     const handleWrite = (e)=>{
         e.preventDefault()
         if(!uploadImg){
@@ -19,31 +29,27 @@ const PostWrite = ({isLogin}) => {
         if(contentRef.current.value ===''){
             return alert('내용을 입력해주세요')
         }
-        let today = new Date();   
-        let year = today.getFullYear(); // 년도
-        let month = today.getMonth() + 1;  // 월
-        let date = today.getDate();  // 날짜
-        const postId = Date.now()
-        const time = `${year}년 ${month}월 ${date}일`
+
+        const img_url = 'asdf';
+
         const data ={
-            writeId:userInfo.id,
-            writeName:userInfo.name,
-            content:contentRef.current.value,
-            uploadImg,
-            time,
-            postId,
+            data:{
+                content,
+                img_url,
+                board_status:layout
+            },
+            token:userInfo.token,
+            navigate
         }
         console.log(data)
-        dispatch(writePostFB(data))
+        dispatch(writeBoard(data))
     }
-
     useEffect(()=>{
-        if(!isLogin){
-            navigate('/');
-            return alert('정상적인 접근이 아닙니다!')
-        }
+        // if(!isLogin){
+        //     navigate('/');
+        //     return alert('정상적인 접근이 아닙니다!')
+        // }
     },[isLogin])
-
     const handleImg = ()=>{
         const fileReader = new FileReader();
         const file = uploadRef.current.files[0];
@@ -52,11 +58,34 @@ const PostWrite = ({isLogin}) => {
             setImg(fileReader.result);
         };
     }
+
+    const selectLayout = (e)=>{
+        for(let key of e.currentTarget.children){
+            key.classList.remove('on')
+        }
+        setLayout(e.target.name)
+        e.target.classList.add('on')
+    }
+
+    const contentPreview = (e)=>{
+        setContent(e.target.value)
+    }
     return (
         <>
             <PostWriteH>
                 게시글 작성
             </PostWriteH>
+            <LayoutBox onClick={selectLayout}>
+                <LayoutBtn name='column' className='on'>
+                    세로
+                </LayoutBtn>
+                <LayoutBtn name='row-reverse'>
+                    오른쪽
+                </LayoutBtn>
+                <LayoutBtn name ='row'>
+                    왼쪽
+                </LayoutBtn>
+            </LayoutBox>
             <UploadLabel htmlFor='upload'>
                 파일올리기
             </UploadLabel>
@@ -70,12 +99,26 @@ const PostWrite = ({isLogin}) => {
             <PostWriteForm
                 onSubmit={handleWrite}
             >
-                <Thumbnail imgUrl={uploadImg}>
-
-                </Thumbnail>
+                <Preview layout ={layout}>
+                    <ContentBox>
+                        <Content>
+                            {getDate()}
+                        </Content>
+                        <Content>
+                            {userInfo.account_name}
+                        </Content>
+                        <Content>
+                            {content}
+                        </Content>
+                    </ContentBox>
+                    <Thumbnail imgUrl={uploadImg}>
+                    </Thumbnail>
+                </Preview>
                 <WriteArea
                     rows="10"
+                    maxLength={150}
                     ref={contentRef}
+                    onChange={contentPreview}
                 >
                 </WriteArea>
                 <WriteBtn>
@@ -96,9 +139,45 @@ const Thumbnail = styled.div`
 `
 
 
-
 const PostWriteH = styled.h1`
     
+`
+
+const Preview = styled.ul`
+    display:flex;
+    flex-direction:${props=>props.layout};
+    margin:30px 0;
+    background:white;
+    border-radius:15px;
+    padding:20px;
+    box-shadow: 0 5px 25px rgb(0 0 0 / 15%);
+`
+
+const ContentBox = styled.li`
+
+`
+
+const Content = styled.div`
+    
+`
+
+const LayoutBox = styled.div`
+    margin: 30px 0;
+`
+const LayoutBtn = styled.button`
+    padding:10px;
+    margin-right:10px;
+    background:powderblue;
+    border-radius:15px;
+    transition:all 0.7s;
+    &:hover{
+        background:blue;
+        color:white;
+    }
+    &.on{
+        background:blue;
+        color:white;
+    }
 `
 
 

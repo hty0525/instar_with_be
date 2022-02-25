@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { useLocation,useNavigate,useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { likePostFB,deletePostFB } from '../../redux/modules/post';
+import {  } from '../../redux/modules/post';
 const PostDetail = () => {
     const userInfo = useSelector(state=>state.user.user);
     const postInfo = useSelector(state=>state.posts.posts);
@@ -36,7 +36,6 @@ const PostDetail = () => {
             let count = LikeCount+1
             setCount(count)
         }
-        dispatch(likePostFB(data))
         setLike(!Like)
     }
     useEffect(() => {
@@ -48,7 +47,6 @@ const PostDetail = () => {
 
     const handleDelete = ()=>{
         if(window.confirm("삭제하시겠습니까?")){
-            dispatch(deletePostFB(id))
             navigate('/',{replace:true})
         }
     }

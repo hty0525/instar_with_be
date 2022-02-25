@@ -12,15 +12,16 @@ import {Routes,Route} from 'react-router-dom'
 import { useSelector,useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-const App = () => {
+const App = () => {  
   const dispatch = useDispatch()
   const isLogin = useSelector(state=>state.user.isLogin)
   const user = useSelector(state=>state)
   const isFetch = useSelector(state=>state.posts.isFetch)
   const msg = useSelector(state=>state.posts.msg)
   useEffect(()=>{
-      if(localStorage.getItem('user')){
-        dispatch(loginCheck(localStorage.getItem('user')))
+
+      if(sessionStorage.getItem('user')){
+        dispatch(loginCheck(JSON.parse(sessionStorage.getItem('user'))))
       }
   },[])
   return (

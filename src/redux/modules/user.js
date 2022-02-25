@@ -1,6 +1,5 @@
 import instance, {userApi} from '../apis/userApis';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import axios from 'axios'
 
 
 
@@ -22,15 +21,15 @@ import axios from 'axios'
 // })
 
 export const join = createAsyncThunk("api/join",
-    async (data,thunkAPI)=>{
+    async ({data,navigate},thunkAPI)=>{
         try{
-            const result = await userApi.signUp(data.data)
+            const result = await userApi.signUp(data)
             if(result.data.result === 'fail'){
                 
                 return alert(result.data.msg)
             }else{
                 alert(result.data.msg)
-                return data.navigate('/')
+                return navigate('/',{replace:true})
             }
         }catch(err){
             console.log(err)
@@ -50,7 +49,7 @@ export const login = createAsyncThunk("api/login", //로그인 미들웨어
             }
             alert('로그인 완료')
             navigate('/',{replace:true})
-            localStorage.setItem('user',JSON.stringify(result.data.data))
+            sessionStorage.setItem('user',JSON.stringify(result.data.data))
             return result.data.data
         }catch{
 
@@ -79,12 +78,15 @@ export const user = createSlice({
             state.status = "loading"
         },
         [login.fulfilled.type]: (state,action)=>{
+            if(action.payload){
+                state.isLogin=true
+            }else{
+                state.isLogin=false
+            }
             state.status = "success"
             state.user = action.payload
-            state.isLogin=true
         },
         [login.rejected.type]: (state)=>{
-            state.status = "fail"
         },
 
         //로그인 체크
@@ -94,12 +96,12 @@ export const user = createSlice({
         [loginCheck.fulfilled.type]: (state,action)=>{
             state.status = "success"
             state.user = action.payload
-            state.isLogin=true
+            state.isLogin = true
+
         },
         [loginCheck.rejected.type]: (state)=>{
             state.status = "fail"
         },
-
     }}
 )
 

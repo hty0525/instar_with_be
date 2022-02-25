@@ -4,20 +4,16 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { getBoard } from '../../redux/modules/post';
 
 const PostList = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const posts = useSelector(state=>state.posts.posts)
     const userStatus = useSelector(state=>state.user.isLogin)
-    const goCreatePost = ()=>{
-        if(!userStatus){
-            return alert('로그인뒤 작성 가능합니다!')
-        }
-        navigate('/write')
-    }
+    console.log()
     useEffect(()=>{
-        
+        dispatch(getBoard())
     },[])
     return (
         <PostWrap>

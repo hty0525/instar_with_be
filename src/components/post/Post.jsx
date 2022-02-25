@@ -13,7 +13,6 @@ const Post = ({post}) => {
         <PostWrap onClick={goDetail}>
             <PostImgBox>
             <PostImg
-                imgUrl={imgUrl}
             />
             </PostImgBox>
         </PostWrap>
